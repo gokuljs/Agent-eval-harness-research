@@ -6,15 +6,18 @@ All source and setup files for this example live in this folder. Synthetic data,
 
 ## Setup
 
-Use Python 3.12 and Node.js with `npx` available on your path. From the repository root, install the pinned Python dependencies:
+Use Python 3.12 and Node.js with `npx` available on your path. From the repository root, create and activate the environment, then install the Python dependencies:
 
 ```sh
 cd openai-eval-test-suite
 python3.12 -m venv .venv
-.venv/bin/python -m pip install -r requirements-experiment.lock.txt
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
 
-The existing local `.venv` and private `.env` are retained. Skip environment creation and installation if that setup is already ready to use.
+`openai`, `openai-agents`, and `halo-engine` are the core packages used by the official example. `requirements.txt` also includes the notebook runner and `.env` dependencies used by this launcher, and constrains package versions with `requirements-experiment.lock.txt`. Installing only the three core packages does not cover all of the launcher's requirements.
+
+If `.venv` already exists, skip environment creation and activate it. Skip installation if its dependencies are already ready to use. Activation is optional for `run_experiment.sh`, which selects this folder's `.venv` automatically.
 
 For a fresh clone only, create the private configuration file. Skip this command if `.env` already exists; do not overwrite existing configuration:
 

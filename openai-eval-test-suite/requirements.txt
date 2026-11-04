@@ -1,0 +1,15 @@
+# Keep the versions verified for this example, including transitive dependencies.
+-c requirements-experiment.lock.txt
+
+# Core packages from the OpenAI Cookbook example.
+openai
+openai-agents
+halo-engine
+
+# Local notebook runner and .env configuration support.
+ipython
+ipykernel
+jupyter-client
+nbclient
+nbformat
+python-dotenv
