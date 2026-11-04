@@ -13,6 +13,14 @@ if ! command -v npx >/dev/null 2>&1; then
 fi
 
 export UV_CACHE_DIR="${UV_CACHE_DIR:-$experiment_root/.local/uv-cache}"
+# HALO's pinned NumPy/Pandas releases need source builds on Python 3.15.
+# Point Apple's compiler at its installed C++ headers when needed.
+if [ "$(uname -s)" = "Darwin" ] && command -v xcrun >/dev/null 2>&1; then
+    experiment_sdk=$(xcrun --show-sdk-path)
+    if [ -d "$experiment_sdk/usr/include/c++/v1" ]; then
+        export CXXFLAGS="${CXXFLAGS:+$CXXFLAGS }-isystem $experiment_sdk/usr/include/c++/v1"
+    fi
+fi
 uv --directory "$experiment_root" sync --locked
 uv pip check --python "$experiment_root/.venv/bin/python"
 

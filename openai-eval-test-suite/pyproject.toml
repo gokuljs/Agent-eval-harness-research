@@ -3,7 +3,7 @@ name = "agent-improvement-loop"
 version = "0.1.0"
 description = "Agent traces, feedback, evals, and a HALO handoff for Codex."
 readme = "README.md"
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.15,<3.16"
 dependencies = [
     "halo-engine==0.3.5",
     "ipykernel==7.4.0",
@@ -19,3 +19,8 @@ dependencies = [
 [tool.uv]
 package = false
 cache-dir = ".local/uv-cache"
+required-version = ">=0.13.7"
+
+[tool.uv.extra-build-variables]
+# Avoid Rust's Mach-O stripping alignment bug when building on macOS 27.
+pydantic-core = { CARGO_PROFILE_RELEASE_STRIP = "none" }

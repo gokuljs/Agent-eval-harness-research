@@ -8,8 +8,7 @@ Install dependencies and check the environment with uv:
 
 ```sh
 cd openai-eval-test-suite
-uv sync
-uv run --locked python run_experiment.py --check
+./setup.sh
 ```
 
-`./setup.sh` also creates `.env` from its template when needed and runs the same checks. See the example's README for configuration and live execution.
+After setup, `uv sync --locked` updates the environment from the lockfile, and `uv run --locked python run_experiment.py --check` reruns readiness checks. See the example's README for configuration and live execution.

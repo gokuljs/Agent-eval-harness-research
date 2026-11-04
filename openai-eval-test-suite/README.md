@@ -6,22 +6,24 @@ All source and setup files for this example live in this folder. Synthetic data,
 
 ## Setup
 
-Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and Node.js with `npx` available on your path. From the repository root, install the Python dependencies:
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and Node.js with `npx` available on your path. From the repository root, install the Python dependencies and check the setup:
 
 ```sh
 cd openai-eval-test-suite
-uv sync
+./setup.sh
 ```
 
-`pyproject.toml` declares the project's dependencies, `.python-version` selects Python 3.12, and `uv.lock` pins the resolved versions. `uv sync` creates or updates `.venv`; no activation or separate pip installation is needed. uv can download Python 3.12 if it is not installed. Use `uv sync --locked` to require the checked-in lockfile without updating it.
+`pyproject.toml` selects Python 3.15 and declares the project's dependencies; `uv.lock` pins the resolved versions. Use uv 0.13.7 or newer. `uv sync` creates or updates `.venv`; no activation or separate pip installation is needed. uv can download Python 3.15 if it is not installed. Use `uv sync --locked` to require the checked-in lockfile without updating it. The Python requirement lives in `pyproject.toml` so pyenv does not intercept a project `.python-version` file.
 
 `openai`, `openai-agents`, and `halo-engine` are the core packages used by the official example. The project also includes the notebook runner and `.env` dependencies. The previous `requirements*.txt` files are retained as a pip-compatible snapshot; uv uses `pyproject.toml` and `uv.lock`.
 
-For a single setup command that syncs the environment, checks package compatibility, creates `.env` from `.env.example` when missing, and runs the readiness checks without model calls, use:
+The setup script syncs the environment, checks package compatibility, creates `.env` from `.env.example` when missing, and runs readiness checks without model calls. After this initial setup, sync the locked environment directly with:
 
 ```sh
-./setup.sh
+uv sync --locked
 ```
+
+HALO's pinned NumPy and Pandas versions build from source on Python 3.15. This first setup needs a C/C++ compiler and Rust; on macOS, install the Xcode Command Line Tools. `setup.sh` configures the installed macOS C++ header path. The project also disables Pydantic Core's release stripping step to avoid a macOS binary-alignment issue. Subsequent syncs reuse the built packages from the local cache.
 
 Set your API key in `.env`:
 
@@ -47,7 +49,7 @@ uv run --locked python run_experiment.py
 
 The live stages use the OpenAI API and incur usage charges. The Cookbook estimates about 20 minutes with the default five traces; model access and latency depend on your account and network.
 
-`./run_experiment.sh` is a wrapper for the same `uv run --locked` command and works from any directory. For interactive notebook use, select `.venv/bin/python` as the kernel after running `uv sync`; dependencies are managed outside the notebook. On macOS, the launcher adds a read-only grant for `.venv` to the agent sandbox in the execution copy so Python can read its configuration and installed packages. The `.env` file is outside that grant.
+`./run_experiment.sh` is a wrapper for the same `uv run --locked` command and works from any directory. For interactive notebook use, select `.venv/bin/python` (Python 3.15) as the kernel after setup; dependencies are managed outside the notebook. On macOS, the launcher adds a read-only grant for `.venv` to the agent sandbox in the execution copy so Python can read its configuration and installed packages. The `.env` file is outside that grant.
 
 uv uses `.local/uv-cache/` for downloads unless `UV_CACHE_DIR` is already set. Runtime caches also live under `.local/`; the next live run downloads Promptfoo as needed.
 
