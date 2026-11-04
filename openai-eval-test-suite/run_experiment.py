@@ -1,4 +1,4 @@
-"""Run the cloned agent improvement notebook with a dedicated Python kernel."""
+"""Run the agent improvement notebook with a dedicated Python kernel."""
 
 from __future__ import annotations
 
@@ -16,9 +16,8 @@ from importlib.metadata import version
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-REPO = ROOT / "openai-eval-test-suite"
-NOTEBOOK = REPO / "examples/agents_sdk/agent_improvement_loop.ipynb"
-ARTIFACTS = NOTEBOOK.parent / "agent_improvement_loop_artifacts"
+NOTEBOOK = ROOT / "agent_improvement_loop.ipynb"
+ARTIFACTS = ROOT / "agent_improvement_loop_artifacts"
 RUNS = ROOT / "runs"
 MODELS = {
     "agent": "OPENAI_AGENT_MODEL",
@@ -32,7 +31,7 @@ MODELS = {
 def load_environment() -> None:
     from dotenv import load_dotenv
 
-    load_dotenv(REPO / ".env", override=False)
+    load_dotenv(ROOT / ".env", override=False)
     os.environ["PATH"] = str(Path(sys.executable).parent) + os.pathsep + os.environ.get("PATH", "")
     os.environ.setdefault("PROMPTFOO_VERSION", "0.121.9")
     os.environ.setdefault("PROMPTFOO_DISABLE_TELEMETRY", "1")
@@ -186,10 +185,10 @@ def execute_notebook(run_dir: Path, timeout: int) -> None:
             allow_errors=False,
             on_cell_start=cell_started,
             on_cell_executed=checkpoint,
-            resources={"metadata": {"path": str(REPO)}},
+            resources={"metadata": {"path": str(ROOT)}},
         )
         try:
-            client.execute(cwd=str(REPO), cleanup_kc=True)
+            client.execute(cwd=str(ROOT), cleanup_kc=True)
         finally:
             nbformat.write(notebook, output)
 
@@ -203,10 +202,10 @@ def main() -> int:
     report = check_setup()
     print(json.dumps(report, indent=2), flush=True)
     if args.check:
-        print("Setup checks passed. Add OPENAI_API_KEY to openai-eval-test-suite/.env before a live run.")
+        print("Setup checks passed. Set OPENAI_API_KEY in the example folder's .env before a live run.")
         return 0
     if not report["api_key_present"]:
-        print("Live run has not started: add OPENAI_API_KEY to openai-eval-test-suite/.env, then rerun ./run_experiment.sh.", file=sys.stderr)
+        print("Live run has not started: set OPENAI_API_KEY in the example folder's .env, then rerun its run_experiment.sh.", file=sys.stderr)
         return 2
 
     run_dir = RUNS / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
