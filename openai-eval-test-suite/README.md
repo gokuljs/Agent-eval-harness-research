@@ -6,23 +6,21 @@ All source and setup files for this example live in this folder. Synthetic data,
 
 ## Setup
 
-Use Python 3.12 and Node.js with `npx` available on your path. From the repository root, create and activate the environment, then install the Python dependencies:
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and Node.js with `npx` available on your path. From the repository root, install the Python dependencies:
 
 ```sh
 cd openai-eval-test-suite
-python3.12 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
+uv sync
 ```
 
-`openai`, `openai-agents`, and `halo-engine` are the core packages used by the official example. `requirements.txt` also includes the notebook runner and `.env` dependencies used by this launcher, and constrains package versions with `requirements-experiment.lock.txt`. Installing only the three core packages does not cover all of the launcher's requirements.
+`pyproject.toml` declares the project's dependencies, `.python-version` selects Python 3.12, and `uv.lock` pins the resolved versions. `uv sync` creates or updates `.venv`; no activation or separate pip installation is needed. uv can download Python 3.12 if it is not installed. Use `uv sync --locked` to require the checked-in lockfile without updating it.
 
-If `.venv` already exists, skip environment creation and activate it. Skip installation if its dependencies are already ready to use. Activation is optional for `run_experiment.sh`, which selects this folder's `.venv` automatically.
+`openai`, `openai-agents`, and `halo-engine` are the core packages used by the official example. The project also includes the notebook runner and `.env` dependencies. The previous `requirements*.txt` files are retained as a pip-compatible snapshot; uv uses `pyproject.toml` and `uv.lock`.
 
-For a fresh clone only, create the private configuration file. Skip this command if `.env` already exists; do not overwrite existing configuration:
+For a single setup command that syncs the environment, checks package compatibility, creates `.env` from `.env.example` when missing, and runs the readiness checks without model calls, use:
 
 ```sh
-cp .env.example .env
+./setup.sh
 ```
 
 Set your API key in `.env`:
@@ -38,20 +36,20 @@ The file is ignored by Git. Environment variables take precedence over values in
 From this folder, check dependencies, notebook code, and the local sandbox without making model calls:
 
 ```sh
-./run_experiment.sh --check
+uv run --locked python run_experiment.py --check
 ```
 
 After adding your API key, start the live experiment:
 
 ```sh
-./run_experiment.sh
+uv run --locked python run_experiment.py
 ```
 
 The live stages use the OpenAI API and incur usage charges. The Cookbook estimates about 20 minutes with the default five traces; model access and latency depend on your account and network.
 
-The launcher uses this folder's Python environment and skips the notebook's package-installation cell. On macOS, it adds a read-only grant for `.venv` to the agent sandbox in the execution copy so Python can read its configuration and installed packages. The `.env` file is outside that grant.
+`./run_experiment.sh` is a wrapper for the same `uv run --locked` command and works from any directory. For interactive notebook use, select `.venv/bin/python` as the kernel after running `uv sync`; dependencies are managed outside the notebook. On macOS, the launcher adds a read-only grant for `.venv` to the agent sandbox in the execution copy so Python can read its configuration and installed packages. The `.env` file is outside that grant.
 
-Download caches were removed during cleanup. Local caches under `.local/` regenerate as needed, and the next live run downloads Promptfoo again.
+uv uses `.local/uv-cache/` for downloads unless `UV_CACHE_DIR` is already set. Runtime caches also live under `.local/`; the next live run downloads Promptfoo as needed.
 
 ## Results
 

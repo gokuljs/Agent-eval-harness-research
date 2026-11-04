@@ -1,10 +1,9 @@
 #!/bin/sh
 set -eu
 experiment_root=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-experiment_python="$experiment_root/.venv/bin/python"
-if [ ! -x "$experiment_python" ]; then
-    echo "Missing experiment environment. See $experiment_root/README.md" >&2
+if ! command -v uv >/dev/null 2>&1; then
+    echo "Install uv first: https://docs.astral.sh/uv/getting-started/installation/" >&2
     exit 1
 fi
-export PATH="$experiment_root/.venv/bin:$PATH"
-exec "$experiment_python" "$experiment_root/run_experiment.py" "$@"
+export UV_CACHE_DIR="${UV_CACHE_DIR:-$experiment_root/.local/uv-cache}"
+exec uv --directory "$experiment_root" run --locked python run_experiment.py "$@"

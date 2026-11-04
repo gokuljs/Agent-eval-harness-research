@@ -52,8 +52,6 @@ def prepare_notebook():
             cell.outputs = []
             cell.execution_count = None
             cell.metadata.pop("execution", None)
-            if cell.source.startswith("%%capture") and "%pip install" in cell.source:
-                cell.metadata["tags"] = list(set(cell.metadata.get("tags", [])) | {"skip-execution"})
             if sys.platform == "darwin" and "async def run_sdk_agent(" in cell.source:
                 # The macOS backend allows PATH/bin but Python also needs its
                 # parent venv's config and site-packages. Grant only read access.
