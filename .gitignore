@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+.local/
+runs/
+__pycache__/
+.venv/
+node_modules/
+.DS_Store
+agent_improvement_loop_artifacts/
